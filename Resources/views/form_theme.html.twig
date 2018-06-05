@@ -1,0 +1,17 @@
+{% block translatable_widget %}
+    <ul class="nav nav-tabs" role="tablist">
+        {% for child in form %}
+            <li class="nav-item {{ loop.first ? 'active' : '' }}">
+                <a id="{{ child.vars.id }}_tab" class="nav-link {{ loop.first ? 'active' : '' }}" href="#{{ child.vars.id }}_tabpane" data-toggle="tab" role="tab" aria-controls="{{ child.vars.id }}_tabpane" aria-selected="{{ loop.first ? 'true' : 'false' }}">{{ child.vars.label }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+    <div class="tab-content">
+        {% for child in form %}
+            <div id="{{ child.vars.id }}_tabpane" class="tab-pane {{ loop.first ? 'active' : '' }}" role="tabpanel" aria-labelledby="{{ child.vars.id }}_tab">
+                {{ form_widget(child) }}
+                {{ form_errors(child) }}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock translatable_widget %}

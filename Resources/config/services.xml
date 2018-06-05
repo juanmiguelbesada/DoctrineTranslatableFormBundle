@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <defaults public="false" />
+
+        <service id="JuanMiguelBesada\DoctrineTranslatableForm\Form\DoctrineTranslatableDataMapper">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="stof_doctrine_extensions.listener.translatable" />
+        </service>
+
+        <service id="JuanMiguelBesada\DoctrineTranslatableForm\Form\TranslatableType">
+            <argument type="service" id="JuanMiguelBesada\DoctrineTranslatableForm\Form\DoctrineTranslatableDataMapper" />
+            <argument />
+            <tag name="form.type" />
+        </service>
+    </services>
+
+</container>
