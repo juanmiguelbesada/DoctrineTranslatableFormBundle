@@ -1,6 +1,6 @@
 <?php
 
-namespace JuanMiguelBesada\DoctrineTranslatableForm\Form;
+namespace JuanMiguelBesada\DoctrineTranslatableFormBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

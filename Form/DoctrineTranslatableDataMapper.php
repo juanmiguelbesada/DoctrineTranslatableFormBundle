@@ -1,6 +1,6 @@
 <?php
 
-namespace JuanMiguelBesada\DoctrineTranslatableForm\Form;
+namespace JuanMiguelBesada\DoctrineTranslatableFormBundle\Form;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Gedmo\Translatable\Entity\Repository\TranslationRepository;

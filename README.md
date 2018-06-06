@@ -46,7 +46,7 @@ class AppKernel extends Kernel
     {
         $bundles = array(
             // ...
-            new JuanMiguelBesada\DoctrineTranslatableFormBundle\DoctrineTranslatableFormBundle(),
+            new JuanMiguelBesada\DoctrineTranslatableFormBundle\JuanMiguelBesadaDoctrineTranslatableFormBundle(),
         );
 
         // ...

@@ -7,13 +7,13 @@
     <services>
         <defaults public="false" />
 
-        <service id="JuanMiguelBesada\DoctrineTranslatableForm\Form\DoctrineTranslatableDataMapper">
+        <service id="JuanMiguelBesada\DoctrineTranslatableFormBundle\Form\DoctrineTranslatableDataMapper">
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="stof_doctrine_extensions.listener.translatable" />
         </service>
 
-        <service id="JuanMiguelBesada\DoctrineTranslatableForm\Form\TranslatableType">
-            <argument type="service" id="JuanMiguelBesada\DoctrineTranslatableForm\Form\DoctrineTranslatableDataMapper" />
+        <service id="JuanMiguelBesada\DoctrineTranslatableFormBundle\Form\TranslatableType">
+            <argument type="service" id="JuanMiguelBesada\DoctrineTranslatableFormBundle\Form\DoctrineTranslatableDataMapper" />
             <argument />
             <tag name="form.type" />
         </service>

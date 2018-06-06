@@ -1,6 +1,6 @@
 <?php
 
-namespace JuanMiguelBesada\DoctrineTranslatableForm\DependencyInjection;
+namespace JuanMiguelBesada\DoctrineTranslatableFormBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
@@ -17,7 +17,7 @@ class JuanMiguelBesadaDoctrineTranslatableFormExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
 
-        $definition = $container->getDefinition('JuanMiguelBesada\DoctrineTranslatableForm\Form\TranslatableType');
+        $definition = $container->getDefinition('JuanMiguelBesada\DoctrineTranslatableFormBundle\Form\TranslatableType');
         $definition->setArgument(1, $config['locales']);
 
         $this->registerFormTheme($container);

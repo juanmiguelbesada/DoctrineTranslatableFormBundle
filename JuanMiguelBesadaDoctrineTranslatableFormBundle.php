@@ -1,6 +1,6 @@
 <?php
 
-namespace JuanMiguelBesada\DoctrineTranslatableForm;
+namespace JuanMiguelBesada\DoctrineTranslatableFormBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
