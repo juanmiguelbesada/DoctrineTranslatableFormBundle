@@ -38,22 +38,13 @@ class DoctrineTranslatableDataMapper implements DataMapperInterface
         foreach ($forms as $form) {
             //$entity = $form->getRoot()->getData();
             $entity = $form->getParent()->getParent()->getData();
-            if (!$this->translatableListener->getPersistDefaultLocaleTranslation()) {
-                $this->loadEntityInDefaultLocale($entity);
-            }
-            $translations = $this->translationsRepository->findTranslations($entity);
             $field = $form->getParent()->getName();
             $locale = $form->getName();
 
-            //If TranslatableListener::persistDefaultLocaleTranslation is disabled the default translation is in original record
-            if (!$this->translatableListener->getPersistDefaultLocaleTranslation() && $locale === $this->translatableListener->getDefaultLocale()) {
-                $accessor = PropertyAccess::createPropertyAccessor();
-                $translations[$locale][$field] = $accessor->getValue($entity, $field);
-            }
+            $this->loadEntityInLocale($entity, $locale);
 
-            if (isset($translations[$locale][$field])) {
-                $form->setData($translations[$locale][$field]);
-            }
+            $accessor = PropertyAccess::createPropertyAccessor();
+            $form->setData($accessor->getValue($entity, $field));
         }
     }
 
@@ -70,19 +61,19 @@ class DoctrineTranslatableDataMapper implements DataMapperInterface
         }
     }
 
-    private function loadEntityInDefaultLocale($entity)
+    private function loadEntityInLocale($entity, $locale)
     {
         $classMetadata = $this->entityManager->getClassMetadata(get_class($entity));
-        $locale = $this->translatableListener->getTranslatableLocale($entity, $classMetadata, $this->entityManager);
+        $currentLocale = $this->translatableListener->getTranslatableLocale($entity, $classMetadata, $this->entityManager);
 
-        if ($locale === $this->translatableListener->getDefaultLocale()) {
+        if ($locale === $currentLocale) {
             return;
         }
 
         $configuration = $this->translatableListener->getConfiguration($this->entityManager, $classMetadata->name);
         $property = $classMetadata->getReflectionClass()->getProperty($configuration['locale']);
         $property->setAccessible(true);
-        $property->setValue($entity, $this->translatableListener->getDefaultLocale());
+        $property->setValue($entity, $locale);
         $this->entityManager->refresh($entity);
     }
 }
