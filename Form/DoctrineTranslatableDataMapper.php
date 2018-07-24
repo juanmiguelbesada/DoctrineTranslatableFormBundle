@@ -3,6 +3,7 @@
 namespace JuanMiguelBesada\DoctrineTranslatableFormBundle\Form;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\ORMInvalidArgumentException;
 use Gedmo\Translatable\Entity\Repository\TranslationRepository;
 use Gedmo\Translatable\Entity\Translation;
 use Gedmo\Translatable\TranslatableListener;
@@ -74,6 +75,9 @@ class DoctrineTranslatableDataMapper implements DataMapperInterface
         $property = $classMetadata->getReflectionClass()->getProperty($configuration['locale']);
         $property->setAccessible(true);
         $property->setValue($entity, $locale);
-        $this->entityManager->refresh($entity);
+
+        try{
+            $this->entityManager->refresh($entity);
+        } catch (ORMInvalidArgumentException $e) {}
     }
 }
