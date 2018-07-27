@@ -3,7 +3,6 @@
 namespace JuanMiguelBesada\DoctrineTranslatableFormBundle\Form;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\ORMInvalidArgumentException;
 use Gedmo\Translatable\Entity\Repository\TranslationRepository;
 use Gedmo\Translatable\Entity\Translation;
 use Gedmo\Translatable\TranslatableListener;
@@ -27,6 +26,11 @@ class DoctrineTranslatableDataMapper implements DataMapperInterface
      */
     private $translationsRepository;
 
+    /**
+     * @var array
+     */
+    private $translations = [];
+
     public function __construct(EntityManagerInterface $entityManager, TranslatableListener $translatableListener)
     {
         $this->entityManager = $entityManager;
@@ -42,10 +46,7 @@ class DoctrineTranslatableDataMapper implements DataMapperInterface
             $field = $form->getParent()->getName();
             $locale = $form->getName();
 
-            $this->loadEntityInLocale($entity, $locale);
-
-            $accessor = PropertyAccess::createPropertyAccessor();
-            $form->setData($accessor->getValue($entity, $field));
+            $form->setData($this->getTranslationForField($entity, $locale, $field));
         }
     }
 
@@ -62,22 +63,32 @@ class DoctrineTranslatableDataMapper implements DataMapperInterface
         }
     }
 
-    private function loadEntityInLocale($entity, $locale)
+    private function getTranslationForField($entity, $locale, $field)
     {
         $classMetadata = $this->entityManager->getClassMetadata(get_class($entity));
         $currentLocale = $this->translatableListener->getTranslatableLocale($entity, $classMetadata, $this->entityManager);
 
         if ($locale === $currentLocale) {
-            return;
+            $accessor = PropertyAccess::createPropertyAccessor();
+
+            return $accessor->getValue($entity, $field);
         }
 
-        $configuration = $this->translatableListener->getConfiguration($this->entityManager, $classMetadata->name);
-        $property = $classMetadata->getReflectionClass()->getProperty($configuration['locale']);
-        $property->setAccessible(true);
-        $property->setValue($entity, $locale);
+        //we need the translations
+        $translations = $this->getEntityTranslations($entity);
+        if (isset($translations[$locale][$field])) {
+            return $translations[$locale][$field];
+        }
 
-        try{
-            $this->entityManager->refresh($entity);
-        } catch (ORMInvalidArgumentException $e) {}
+        return '';
+    }
+
+    private function getEntityTranslations($entity)
+    {
+        if (!count($this->translations)) {
+            $this->translations = $this->translationsRepository->findTranslations($entity);
+        }
+
+        return $this->translations;
     }
 }

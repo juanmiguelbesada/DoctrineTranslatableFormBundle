@@ -23,7 +23,7 @@ class JuanMiguelBesadaDoctrineTranslatableFormExtension extends Extension
         $this->registerFormTheme($container);
     }
 
-    private function registerFormTheme(ContainerBuilder $container): void
+    private function registerFormTheme(ContainerBuilder $container)
     {
         $resources = $container->hasParameter('twig.form.resources') ? $container->getParameter('twig.form.resources') : [];
         $resources[] = '@JuanMiguelBesadaDoctrineTranslatableForm/form_theme.html.twig';

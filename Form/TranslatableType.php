@@ -5,6 +5,7 @@ namespace JuanMiguelBesada\DoctrineTranslatableFormBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Intl\Intl;
+use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TranslatableType extends AbstractType
@@ -40,7 +41,7 @@ class TranslatableType extends AbstractType
             $typeOptions['label'] = Intl::getLocaleBundle()->getLocaleName($locale);
 
             //Mark the first locale as required if needed
-            if ($options['required'] && $locale === $options['locales'][0]) {
+            if ($options['required'] && $options['locales'][0] === $locale) {
                 $typeOptions['required'] = true;
             }
 
@@ -54,8 +55,17 @@ class TranslatableType extends AbstractType
             ->setRequired('type')
             ->setDefaults([
                 'locales' => $this->locales,
-                'type_options' => [],
+                'type_options' => [
+                    'required' => false,
+                ],
                 'mapped' => false,
-            ]);
+            ])
+            ->setNormalizer('type_options', function (Options $options, $typeOptions) {
+                if (!isset($typeOptions['required'])) {
+                    $typeOptions['required'] = false;
+                }
+
+                return $typeOptions;
+            });
     }
 }
