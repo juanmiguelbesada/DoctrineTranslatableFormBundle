@@ -73,9 +73,10 @@ Usage
 
 namespace AppBundle\Form;
 
+use Symfony\Component\Form\AbstractType;
 use JuanMiguelBesada\DoctrineTranslatableFormBundle\Form\TranslatableType;
 
-class CategoryType extends AbstractTranslatableType
+class CategoryType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
@@ -85,8 +86,9 @@ class CategoryType extends AbstractTranslatableType
     {
 
         // you can add the translatable fields
-        $this
+        $builder
              ->add("name", TranslatableType::class, array(
+                 'label' => 'Name',
                  'type' => TextType::class,
                  'type_options' => array(
                      'required' => false,
@@ -103,12 +105,8 @@ class CategoryType extends AbstractTranslatableType
                      ...
                  )
              ))
+             ->add('enabled') // you can add the rest of the fields using the standard way
         ;
-
-        // and then you can add the rest of the fields using the standard way
-        $builder->add('enabled')
-        ;
-
     }
     
     /**
@@ -116,7 +114,6 @@ class CategoryType extends AbstractTranslatableType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-
         $resolver->setDefaults(array(
             'data_class'   => 'AppBundle\Entity\Category'
         ));
