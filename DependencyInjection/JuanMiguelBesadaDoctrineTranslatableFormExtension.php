@@ -18,7 +18,7 @@ class JuanMiguelBesadaDoctrineTranslatableFormExtension extends Extension
         $loader->load('services.xml');
 
         $definition = $container->getDefinition('JuanMiguelBesada\DoctrineTranslatableFormBundle\Form\TranslatableType');
-        $definition->setArgument(1, $config['locales']);
+        $definition->setArgument(2, $config['locales']);
 
         $this->registerFormTheme($container);
     }

@@ -2,6 +2,8 @@
 
 namespace JuanMiguelBesada\DoctrineTranslatableFormBundle\Form;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Gedmo\Translatable\TranslatableListener;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Intl\Intl;
@@ -10,10 +12,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TranslatableType extends AbstractType
 {
-    /**
-     * @var DoctrineTranslatableDataMapper
-     */
-    private $mapper;
+    private $entityManager;
+
+    private $translatableListener;
 
     /**
      * @var array
@@ -26,15 +27,16 @@ class TranslatableType extends AbstractType
      * @param DoctrineTranslatableDataMapper $mapper
      * @param array                          $locales
      */
-    public function __construct(DoctrineTranslatableDataMapper $mapper, array $locales = [])
+    public function __construct(EntityManagerInterface $entityManager, TranslatableListener $translatableListener, array $locales = [])
     {
-        $this->mapper = $mapper;
+        $this->entityManager = $entityManager;
+        $this->translatableListener = $translatableListener;
         $this->locales = $locales;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->setDataMapper($this->mapper);
+        $builder->setDataMapper(new DoctrineTranslatableDataMapper($this->entityManager, $this->translatableListener));
 
         foreach ($options['locales'] as $locale) {
             $typeOptions = $options['type_options'];

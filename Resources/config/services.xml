@@ -7,13 +7,9 @@
     <services>
         <defaults public="false" />
 
-        <service id="JuanMiguelBesada\DoctrineTranslatableFormBundle\Form\DoctrineTranslatableDataMapper">
-            <argument type="service" id="doctrine.orm.entity_manager"/>
-            <argument type="service" id="stof_doctrine_extensions.listener.translatable" />
-        </service>
-
         <service id="JuanMiguelBesada\DoctrineTranslatableFormBundle\Form\TranslatableType">
-            <argument type="service" id="JuanMiguelBesada\DoctrineTranslatableFormBundle\Form\DoctrineTranslatableDataMapper" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="stof_doctrine_extensions.listener.translatable" />
             <argument />
             <tag name="form.type" />
         </service>

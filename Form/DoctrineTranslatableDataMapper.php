@@ -7,18 +7,14 @@ use Gedmo\Translatable\Entity\Repository\TranslationRepository;
 use Gedmo\Translatable\Entity\Translation;
 use Gedmo\Translatable\TranslatableListener;
 use Symfony\Component\Form\DataMapperInterface;
+use Symfony\Component\Form\Exception\UnexpectedTypeException;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class DoctrineTranslatableDataMapper implements DataMapperInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
     private $entityManager;
 
-    /**
-     * @var TranslatableListener
-     */
     private $translatableListener;
 
     /**
@@ -40,11 +36,16 @@ class DoctrineTranslatableDataMapper implements DataMapperInterface
 
     public function mapDataToForms($data, $forms)
     {
+        $empty = null === $data || [] === $data;
+
+        if (!$empty && !\is_array($data) && !\is_object($data)) {
+            throw new UnexpectedTypeException($data, 'object, array or empty');
+        }
+
         foreach ($forms as $form) {
-            //$entity = $form->getRoot()->getData();
-            $entity = $form->getParent()->getParent()->getData();
-            $field = $form->getParent()->getName();
             $locale = $form->getName();
+            $entity = $this->getTranslatableEntity($form);
+            $field = $this->getTranslatableField($form);
 
             $form->setData($this->getTranslationForField($entity, $locale, $field));
         }
@@ -52,11 +53,18 @@ class DoctrineTranslatableDataMapper implements DataMapperInterface
 
     public function mapFormsToData($forms, &$data)
     {
+        if (null === $data) {
+            return;
+        }
+
+        if (!\is_array($data) && !\is_object($data)) {
+            throw new UnexpectedTypeException($data, 'object, array or empty');
+        }
+
         foreach ($forms as $form) {
-            //$entity = $form->getRoot()->getData();
-            $entity = $form->getParent()->getParent()->getData();
-            $field = $form->getParent()->getName();
             $locale = $form->getName();
+            $entity = $this->getTranslatableEntity($form);
+            $field = $this->getTranslatableField($form);
             $translation = $form->getData();
 
             $this->translationsRepository->translate($entity, $field, $locale, $translation);
@@ -65,7 +73,7 @@ class DoctrineTranslatableDataMapper implements DataMapperInterface
 
     private function getTranslationForField($entity, $locale, $field)
     {
-        $classMetadata = $this->entityManager->getClassMetadata(get_class($entity));
+        $classMetadata = $this->getClassMetadata($entity);
         $currentLocale = $this->translatableListener->getTranslatableLocale($entity, $classMetadata, $this->entityManager);
 
         if ($locale === $currentLocale) {
@@ -90,5 +98,38 @@ class DoctrineTranslatableDataMapper implements DataMapperInterface
         }
 
         return $this->translations;
+    }
+
+    private function getClassMetadata($entity)
+    {
+        return $this->entityManager->getClassMetadata(get_class($entity));
+    }
+
+    private function getTranslatableEntity(FormInterface $form)
+    {
+        $entity = $form->getParent()->getParent()->getData();
+
+        if ($this->isEmbeddedClass($entity)) {
+            $entity = $form->getParent()->getParent()->getParent()->getData();
+        }
+
+        return $entity;
+    }
+
+    private function getTranslatableField(FormInterface $form)
+    {
+        $field = $form->getParent()->getName();
+
+        $entity = $form->getParent()->getParent()->getData();
+        if ($this->isEmbeddedClass($entity)) {
+            $field = $form->getParent()->getParent()->getName() . '.' . $field;
+        }
+
+        return $field;
+    }
+
+    private function isEmbeddedClass($entity)
+    {
+        return  $entityMetadata = $this->getClassMetadata($entity)->isEmbeddedClass;
     }
 }
